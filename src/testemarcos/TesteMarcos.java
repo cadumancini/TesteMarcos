@@ -58,42 +58,34 @@ public class TesteMarcos {
         session.saveOrUpdate(produto3);
         session.saveOrUpdate(produto4);
         session.saveOrUpdate(produto5);
-        */
         
         Criteria select = session.createCriteria(Produto.class);
-        select.add(Restrictions.like("codigo", "C", MatchMode.ANYWHERE));
+        select.add(Restrictions.like("codigo", "F", MatchMode.ANYWHERE));
         Produto prod = (Produto)select.list().get(0);
         
         select = session.createCriteria(Produto.class);
-        select.add(Restrictions.like("codigo", "F", MatchMode.ANYWHERE));
+        select.add(Restrictions.like("codigo", "H", MatchMode.ANYWHERE));
         Produto prod2 = (Produto)select.list().get(0);
-        
-        select = session.createCriteria(Produto.class);
-        select.add(Restrictions.like("codigo", "G", MatchMode.ANYWHERE));
-        Produto prod3 = (Produto)select.list().get(0);
         
         Componente cmp1 = new Componente();
         cmp1.setComponente(prod2);
         cmp1.setModelo(prod);
         cmp1.setQuantidade(2.0);
         
-        Componente cmp2 = new Componente();
-        cmp2.setComponente(prod3);
-        cmp2.setModelo(prod);
-        cmp2.setQuantidade(5.0);
-        
         session.saveOrUpdate(cmp1);
-        session.saveOrUpdate(cmp2); 
+        */
         
-        /*
         Criteria select = session.createCriteria(Produto.class);
-        select.add(Restrictions.like("descricao", "B", MatchMode.ANYWHERE));
+        select.add(Restrictions.like("codigo", "A", MatchMode.ANYWHERE));
         Produto prod = (Produto)select.list().get(0);
         
+        String cmpTxt = prod.getDescricao();
+        boolean continuar = true;
         for(Componente cmp : prod.getComponentes()){
-            System.out.println(cmp.getComponente().getDescricao());
+            cmpTxt += " => " + cmp.getComponente().getDescricao();
+            System.out.println(cmpTxt);
+            cmpTxt = prod.getDescricao();
         }
-        */
         
         tx.commit();
         session.close();
