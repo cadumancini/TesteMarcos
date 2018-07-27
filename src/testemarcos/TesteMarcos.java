@@ -19,7 +19,6 @@ import org.hibernate.criterion.Restrictions;
  * @author cemancini
  */
 public class TesteMarcos {
-
     /**
      * @param args the command line arguments
      */
@@ -60,19 +59,28 @@ public class TesteMarcos {
         session.saveOrUpdate(produto5);
         
         Criteria select = session.createCriteria(Produto.class);
-        select.add(Restrictions.like("codigo", "F", MatchMode.ANYWHERE));
+        select.add(Restrictions.like("codigo", "H", MatchMode.ANYWHERE));
         Produto prod = (Produto)select.list().get(0);
         
         select = session.createCriteria(Produto.class);
-        select.add(Restrictions.like("codigo", "H", MatchMode.ANYWHERE));
+        select.add(Restrictions.like("codigo", "E", MatchMode.ANYWHERE));
         Produto prod2 = (Produto)select.list().get(0);
+        
+        select = session.createCriteria(Produto.class);
+        select.add(Restrictions.like("codigo", "G", MatchMode.ANYWHERE));
+        Produto prod3 = (Produto)select.list().get(0); 
         
         Componente cmp1 = new Componente();
         cmp1.setComponente(prod2);
         cmp1.setModelo(prod);
         cmp1.setQuantidade(2.0);
-        
         session.saveOrUpdate(cmp1);
+        Componente cmp2 = new Componente();
+        cmp2.setComponente(prod3);
+        cmp2.setModelo(prod);
+        cmp2.setQuantidade(2.0);
+        session.saveOrUpdate(cmp2);
+        session.saveOrUpdate(prod);
         */
         
         Criteria select = session.createCriteria(Produto.class);
@@ -80,14 +88,27 @@ public class TesteMarcos {
         Produto prod = (Produto)select.list().get(0);
         
         String cmpTxt = prod.getDescricao();
-        boolean continuar = true;
-        for(Componente cmp : prod.getComponentes()){
-            cmpTxt += " => " + cmp.getComponente().getDescricao();
-            System.out.println(cmpTxt);
-            cmpTxt = prod.getDescricao();
-        }
+        System.out.println(cmpTxt);
+        estrutura(prod, cmpTxt);
         
         tx.commit();
         session.close();
+    }
+    
+    public static void estrutura(Produto prod, String cmpTxt){
+        for(Componente cmp : prod.getComponentes()){
+            String strTmp = cmpTxt;
+            cmpTxt += " => " + cmp.getComponente().getDescricao();
+            Produto prod2 = (Produto) HibernateUtil.openSession().createCriteria(Produto.class)
+                    .add(Restrictions.like("codigo", cmp.getComponente().getCodigo(), MatchMode.ANYWHERE))
+                    .list().get(0);
+            System.out.println(cmpTxt);
+            
+            if(prod2.getComponentes().size() > 0){
+                prod = prod2;
+                estrutura(prod, cmpTxt);
+            } 
+            cmpTxt = strTmp;
+        }
     }
 }
